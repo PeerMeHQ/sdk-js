@@ -6,16 +6,16 @@ export type ProposalAction = {
   value: bigint
   arguments: ProposalActionArg[]
   payments: ProposalActionPayment[]
-};
+}
 
 export type ProposalActionArg = string | number | boolean | bigint | null
 
 export type ProposalActionPayment = {
-  tokenId: string;
-  tokenNonce: number;
-  tokenDecimals?: number | null;
-  amount: bigint;
-};
+  tokenId: string
+  tokenNonce: number
+  tokenDecimals?: number | null
+  amount: bigint
+}
 
 // we use x-prefix to avoid name collisions with wallet url parameters
 export type SerializableProposalAction = {
@@ -24,4 +24,4 @@ export type SerializableProposalAction = {
   xvalue: bigint
   xarguments: ProposalActionArg[]
   xpayments: ProposalActionPayment[]
-};
+}

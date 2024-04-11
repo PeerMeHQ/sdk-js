@@ -6,15 +6,14 @@ type Options = {
   network?: NetworkId
 }
 
-
 export class ProposalDeepLinkBuilder {
   private network: NetworkId
   private teamId: string
-  private title: string|null = null
-  private description: string|null = null
+  private title: string | null = null
+  private description: string | null = null
   private actions: ProposalAction[] = []
 
-  constructor(teamId: string, options: Options) {
+  constructor(teamId: string, options?: Options) {
     this.teamId = teamId
     this.network = options?.network || 'mainnet'
   }
@@ -44,8 +43,8 @@ export class ProposalDeepLinkBuilder {
     }
 
     const webBaseUrl = Config.Urls.Web(this.network)
-    const encodedTitle = encodeURIComponent(this.title);
-    const encodedDescription = this.description ? encodeURIComponent(this.description) : '';
+    const encodedTitle = encodeURIComponent(this.title)
+    const encodedDescription = this.description ? encodeURIComponent(this.description) : ''
     const serializableActions = this.actions.map(this.toSerializableAction)
     const serializedActions = qs.stringify(serializableActions)
 

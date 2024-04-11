@@ -1,4 +1,4 @@
-import { NetworkId } from "./types";
+import { NetworkId } from './types'
 
 export const Config = {
   Urls: {
@@ -10,5 +10,5 @@ export const Config = {
   },
   DeepLink: {
     MaxActions: 1,
-  }
+  },
 }
