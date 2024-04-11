@@ -1,10 +1,18 @@
-import qs from 'qs'
 import { Config } from './config'
-import { NetworkId, ProposalAction, SerializableProposalAction } from './types'
+import {
+  NetworkId,
+  ProposalAction,
+  ProposalActionArg,
+  ProposalActionValue,
+  ProposalActionPayment,
+  SerializableProposalAction,
+} from './types'
 
 type Options = {
   network?: NetworkId
 }
+
+const ArgBigIntPrefix = 'big:'
 
 export class ProposalDeepLinkBuilder {
   private network: NetworkId
@@ -28,8 +36,20 @@ export class ProposalDeepLinkBuilder {
     return this
   }
 
-  addAction(action: ProposalAction): ProposalDeepLinkBuilder {
-    this.actions.push(action)
+  addAction(
+    destination: string,
+    endpoint: string,
+    value?: ProposalActionValue,
+    args?: ProposalActionArg[],
+    payments?: ProposalActionPayment[]
+  ): ProposalDeepLinkBuilder {
+    this.actions.push({
+      destination,
+      endpoint,
+      value: value || BigInt(0),
+      args: args || [],
+      payments: payments || [],
+    })
     return this
   }
 
@@ -42,22 +62,32 @@ export class ProposalDeepLinkBuilder {
       throw new Error(`maximum number of actions is ${Config.DeepLink.MaxActions}`)
     }
 
-    const webBaseUrl = Config.Urls.Web(this.network)
-    const encodedTitle = encodeURIComponent(this.title)
-    const encodedDescription = this.description ? encodeURIComponent(this.description) : ''
-    const serializableActions = this.actions.map(this.toSerializableAction)
-    const serializedActions = qs.stringify(serializableActions)
+    const params = new URLSearchParams()
+    params.set('title', this.title)
+    if (this.description) params.set('description', this.description)
 
-    return `${webBaseUrl}/${this.teamId}/propose/new?title=${encodedTitle}&description=${encodedDescription}&${serializedActions}`
+    this.actions.map(this.toSerializableAction).forEach((serializable) => {
+      params.append('actions[]', JSON.stringify(serializable, null, 0))
+    })
+
+    return `${Config.Urls.Web(this.network)}/${this.teamId}/propose?${params.toString()}`
   }
 
   private toSerializableAction(action: ProposalAction): SerializableProposalAction {
     return {
       xdestination: action.destination,
       xendpoint: action.endpoint,
-      xvalue: action.value,
-      xarguments: action.arguments,
-      xpayments: action.payments,
+      xvalue: action.value.toString(),
+      xargs: action.args.map((arg) => {
+        if (typeof arg === 'bigint') return ArgBigIntPrefix + arg.toString()
+        return arg
+      }),
+      xpayments: action.payments.map((payment) => ({
+        tokenId: payment.tokenId,
+        tokenNonce: payment.tokenNonce,
+        tokenDecimals: payment.tokenDecimals,
+        amount: payment.amount.toString(),
+      })),
     }
   }
 }
