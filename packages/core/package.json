@@ -1,0 +1,43 @@
+{
+  "name": "@peerme/sdk",
+  "version": "0.1.0",
+  "description": "",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "browser": "dist/index.global.js",
+  "scripts": {
+    "build": "tsup src/index.ts --dts --format cjs,iife --minify --clean",
+    "test": "jest",
+    "lint": "tsc --noEmit",
+    "preversion": "npm run lint && npm run build"
+  },
+  "author": "",
+  "license": "MIT",
+  "files": [
+    "dist"
+  ],
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/qs": "^6.9.14",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jest-fetch-mock": "^3.0.3",
+    "react": "^18.2.0",
+    "ts-jest": "^29.1.2",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.5"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "jsdom",
+    "setupFiles": [
+      "./jest.setup.ts"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "qs": "^6.12.0"
+  }
+}
