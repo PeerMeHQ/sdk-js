@@ -9,6 +9,6 @@ export const Config = {
     },
   },
   DeepLink: {
-    MaxActions: 1,
+    MaxActions: 5,
   },
 }
