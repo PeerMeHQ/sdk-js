@@ -4,9 +4,9 @@
   "description": "",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "browser": "dist/index.global.js",
+  "module": "./dist/index.js",
   "scripts": {
-    "build": "tsup src/index.ts --dts --format cjs,iife --minify --clean",
+    "build": "tsup src/index.ts --dts --format cjs,esm --minify --clean",
     "test": "jest",
     "lint": "tsc --noEmit",
     "preversion": "npm run lint && npm run build"
