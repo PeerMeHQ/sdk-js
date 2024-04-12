@@ -14,9 +14,18 @@ type Options = {
 
 const ArgBigIntPrefix = 'big:'
 
+const QueryParams = {
+  Title: 'title',
+  Description: 'description',
+  Actions: 'actions',
+  AccessToken: 'accessToken',
+}
+
 export class ProposalDeepLinkBuilder {
   private network: NetworkId
   private teamId: string
+  private userAccessToken: string | null = null
+
   private title: string | null = null
   private description: string | null = null
   private actions: ProposalAction[] = []
@@ -24,6 +33,11 @@ export class ProposalDeepLinkBuilder {
   constructor(teamId: string, options?: Options) {
     this.teamId = teamId
     this.network = options?.network || 'mainnet'
+  }
+
+  authenticate(accessToken: string): ProposalDeepLinkBuilder {
+    this.userAccessToken = accessToken
+    return this
   }
 
   setTitle(title: string): ProposalDeepLinkBuilder {
@@ -63,12 +77,16 @@ export class ProposalDeepLinkBuilder {
     }
 
     const params = new URLSearchParams()
-    params.set('title', this.title)
-    if (this.description) params.set('description', this.description)
+    params.set(QueryParams.Title, this.title)
+    if (this.description) params.set(QueryParams.Description, this.description)
 
     this.actions.map(this.toSerializableAction).forEach((serializable) => {
-      params.append('actions[]', JSON.stringify(serializable, null, 0))
+      params.append(QueryParams.Actions + '[]', JSON.stringify(serializable, null, 0))
     })
+
+    if (this.userAccessToken) {
+      params.set(QueryParams.AccessToken, this.userAccessToken)
+    }
 
     return `${Config.Urls.Web(this.network)}/${this.teamId}/propose?${params.toString()}`
   }
